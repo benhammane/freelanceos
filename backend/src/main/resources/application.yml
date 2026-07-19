@@ -1,0 +1,70 @@
+# Configuration de l'application Spring Boot pour FreelanceOS.
+# Spring Boot charge ce fichier automatiquement au démarrage.
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: freelanceos
+
+  datasource:
+    # URL de connexion JDBC vers PostgreSQL (voir docker-compose.yml à la racine)
+    # Port 5433 : le 5432 par defaut est deja occupe par un PostgreSQL natif
+    # installe sur cette machine (voir docker-compose.yml).
+    url: jdbc:postgresql://localhost:5433/freelanceos
+    username: freelanceos
+    password: freelanceos
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # "update" : Hibernate crée/modifie automatiquement les tables à partir des
+      # entités @Entity. Pratique en développement. En production on utiliserait
+      # plutôt des migrations versionnées (Flyway/Liquibase) - à prévoir plus tard.
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  # Limites d'upload des captures d'écran de projet (multipart/form-data).
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+# Configuration de springdoc-openapi : expose la doc JSON sur /v3/api-docs
+# et l'interface graphique Swagger UI sur /swagger-ui.html (redirige vers /swagger-ui/index.html)
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.weblocal.freelanceos: DEBUG
+
+# Configuration propre à l'application (pas un préfixe Spring Boot standard).
+app:
+  jwt:
+    # Clé secrète utilisée pour SIGNER les tokens JWT (algorithme HMAC-SHA256,
+    # voir JwtService) : quiconque la connaît peut fabriquer de faux tokens
+    # valides. Ne JAMAIS committer la vraie valeur de production : à
+    # surcharger via la variable d'environnement APP_JWT_SECRET.
+    secret: ${APP_JWT_SECRET:changez-moi-en-production-cle-secrete-freelanceos-jwt-2026-au-moins-32-caracteres}
+    expiration-ms: 86400000 # 24h
+  admin:
+    # Identifiants du compte ADMIN créé automatiquement au premier démarrage
+    # si aucun utilisateur n'existe encore (voir AdminBootstrap).
+    email: ${APP_ADMIN_EMAIL:admin@freelanceos.local}
+    password: ${APP_ADMIN_PASSWORD:ChangeMe123!}
+  stripe:
+    # Clés Stripe pour les paiements en ligne (mode test par défaut)
+    # Générez vos clés sur https://dashboard.stripe.com/test/keys
+    # Surcharger via variables d'environnement en production:
+    # APP_STRIPE_SECRET_KEY et APP_STRIPE_PUBLISHABLE_KEY
+    secret-key: ${APP_STRIPE_SECRET_KEY:sk_test_51234567890abcdefghijk}
+    publishable-key: ${APP_STRIPE_PUBLISHABLE_KEY:pk_test_51234567890abcdefghijk}

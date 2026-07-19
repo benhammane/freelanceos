@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+/*
+ * ============================================================================
+ *  FreelanceOS — Design System
+ * ============================================================================
+ *  Inspiré de Linear / Stripe / Vercel : palette ardoise + bleu, ombres très
+ *  légères, rayons généreux, transitions courtes.
+ *
+ *  Astuce d'architecture : plutôt que de réécrire chaque page, on REDÉFINIT
+ *  ici les échelles de couleurs historiques `navy-*` et `cyan-*` :
+ *    - navy  -> échelle ARDOISE (slate)  : fonds sombres, textes, bordures
+ *    - cyan  -> échelle BLEUE (#2563EB)  : couleur primaire, accents
+ *  Toutes les classes déjà utilisées dans l'app (bg-cyan-500, text-navy-800…)
+ *  adoptent donc instantanément la nouvelle identité, sans toucher au code
+ *  métier des pages.
+ * ============================================================================
+ */
+
+/* Active la variante `dark:` pilotée par une classe `.dark` sur <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* --- Ardoise (ex "navy") : structure, textes, surfaces sombres --- */
+  --color-navy-50: #f8fafc;
+  --color-navy-100: #f1f5f9;
+  --color-navy-200: #e2e8f0;
+  --color-navy-300: #cbd5e1;
+  --color-navy-400: #94a3b8;
+  --color-navy-500: #64748b;
+  --color-navy-600: #475569;
+  --color-navy-700: #334155;
+  --color-navy-800: #1e293b;
+  --color-navy-900: #0f172a;
+  --color-navy-950: #020617;
+
+  /* --- Bleu primaire (ex "cyan") : #2563EB / hover #1D4ED8 --- */
+  --color-cyan-50: #eff6ff;
+  --color-cyan-100: #dbeafe;
+  --color-cyan-200: #bfdbfe;
+  --color-cyan-300: #93c5fd;
+  --color-cyan-400: #60a5fa;
+  --color-cyan-500: #2563eb;
+  --color-cyan-600: #1d4ed8;
+  --color-cyan-700: #1e40af;
+  --color-cyan-800: #1e3a8a;
+  --color-cyan-900: #172554;
+
+  /* --- Alias sémantiques "brand" (mêmes valeurs, noms explicites) --- */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #2563eb;
+  --color-brand-600: #1d4ed8;
+  --color-brand-700: #1e40af;
+
+  /* --- Rayons --- */
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* --- Ombres très légères, style SaaS --- */
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 6px -2px rgb(15 23 42 / 0.05);
+  --shadow-lg: 0 12px 28px -6px rgb(15 23 42 / 0.12), 0 6px 12px -6px rgb(15 23 42 / 0.08);
+
+  /* --- Typographie --- */
+  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* --- Animations réutilisables --- */
+  --animate-fade-in: fade-in 0.2s ease-out both;
+  --animate-slide-up: slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/*
+ * Tokens sémantiques pilotés par variables CSS : ils basculent en mode sombre.
+ * Utilisés par les composants du "châssis" (layout, cartes, tableaux) via des
+ * classes utilitaires arbitraires bg-[var(--surface)] etc.
+ */
+:root {
+  --app-bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+  --fg: #0f172a;
+  --fg-muted: #64748b;
+}
+
+.dark {
+  --app-bg: #0b1120;
+  --surface: #0f172a;
+  --surface-2: #131c2e;
+  --border: #1e293b;
+  --fg: #e2e8f0;
+  --fg-muted: #94a3b8;
+  color-scheme: dark;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--app-bg);
+  color: var(--fg);
+  font-feature-settings: "cv11", "ss01";
+  letter-spacing: -0.011em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Focus visible cohérent et accessible sur toute l'application. */
+:focus-visible {
+  outline: 2px solid var(--color-cyan-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Barres de défilement discrètes, style macOS. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg-muted) 35%, transparent);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--fg-muted) 55%, transparent);
+  background-clip: content-box;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-cyan-500) 22%, transparent);
+}

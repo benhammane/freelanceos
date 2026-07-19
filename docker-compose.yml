@@ -1,0 +1,25 @@
+# Pour l'instant, seul PostgreSQL est conteneurisé.
+# Le backend Spring Boot et le frontend Vite tournent en local pendant le développement
+# (plus rapide pour itérer : rechargement à chaud, débogage direct depuis l'IDE).
+# La dockerisation complète (backend, frontend, futur service IA) est prévue pour une
+# phase ultérieure une fois le coeur fonctionnel validé.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: freelanceos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: freelanceos
+      POSTGRES_USER: freelanceos
+      POSTGRES_PASSWORD: freelanceos
+    ports:
+      # Le port hote 5432 est deja utilise par un PostgreSQL natif installe sur
+      # cette machine (service Windows postgresql-x64-18) : on expose le
+      # conteneur sur 5433 pour eviter tout conflit.
+      - "5433:5432"
+    volumes:
+      - freelanceos-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  freelanceos-postgres-data:

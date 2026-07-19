@@ -1,0 +1,39 @@
+#!/bin/sh
+# Maven Wrapper simplifie (Unix/macOS/Linux/Git Bash).
+# Telecharge automatiquement Maven selon .mvn/wrapper/maven-wrapper.properties
+# puis delegue les arguments a "mvn".
+set -e
+
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+WRAPPER_PROPERTIES="$PROJECT_DIR/.mvn/wrapper/maven-wrapper.properties"
+CACHE_DIR="$HOME/.m2/wrapper/dists"
+
+if [ ! -f "$WRAPPER_PROPERTIES" ]; then
+  echo "Fichier $WRAPPER_PROPERTIES introuvable." >&2
+  exit 1
+fi
+
+DIST_URL=$(grep '^distributionUrl=' "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
+ZIP_NAME=$(basename "$DIST_URL" .zip)
+DIST_DIR="$CACHE_DIR/$ZIP_NAME"
+
+if [ ! -d "$DIST_DIR" ]; then
+  echo "Telechargement de Maven ($ZIP_NAME)..."
+  mkdir -p "$CACHE_DIR"
+  curl -fsSL -o "$CACHE_DIR/$ZIP_NAME.zip" "$DIST_URL"
+  mkdir -p "$DIST_DIR"
+  unzip -q -o "$CACHE_DIR/$ZIP_NAME.zip" -d "$DIST_DIR"
+  rm "$CACHE_DIR/$ZIP_NAME.zip"
+fi
+
+# Le zip Maven contient un sous-dossier dont le nom ne correspond pas toujours
+# exactement au nom du zip (ex: "apache-maven-3.9.9" pour "...-bin.zip").
+MAVEN_BIN=$(find "$DIST_DIR" -type f -name mvn -path "*/bin/*" | head -n 1)
+chmod +x "$MAVEN_BIN" 2>/dev/null || true
+
+if [ -z "$MAVEN_BIN" ]; then
+  echo "Maven n'a pas pu etre installe dans $DIST_DIR" >&2
+  exit 1
+fi
+
+exec "$MAVEN_BIN" "$@"
