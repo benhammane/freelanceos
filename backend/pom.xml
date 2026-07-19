@@ -30,6 +30,8 @@
         <openpdf.version>1.3.42</openpdf.version>
         <!-- jjwt : génération/validation des tokens JWT pour l'authentification -->
         <jjwt.version>0.12.6</jjwt.version>
+        <!-- SDK Java officiel de Stripe pour les paiements en ligne -->
+        <stripe.version>29.2.0</stripe.version>
     </properties>
 
     <dependencies>
@@ -105,6 +107,14 @@
             <groupId>com.github.librepdf</groupId>
             <artifactId>openpdf</artifactId>
             <version>${openpdf.version}</version>
+        </dependency>
+
+        <!-- SDK Stripe : création des intentions de paiement et vérification des
+             webhooks (confirmation de paiement) côté serveur. -->
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${stripe.version}</version>
         </dependency>
 
         <!-- Lombok : génère automatiquement getters/setters/constructeurs via annotations,

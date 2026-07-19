@@ -77,6 +77,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Le login doit rester accessible sans être déjà authentifié...
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Le webhook Stripe est appelé par Stripe (pas d'utilisateur) : il
+                        // est authentifié par la signature Stripe, pas par un JWT. La clé
+                        // publique Stripe est, par nature, publique.
+                        .requestMatchers("/api/payments/webhook", "/api/payments/public-key").permitAll()
                         // Le handshake WebSocket de signaling est protégé séparément par
                         // JwtHandshakeInterceptor (le JWT y est passé en query param, car
                         // un navigateur ne peut pas poser d'en-tête Authorization sur un WS).

@@ -68,3 +68,8 @@ app:
     # APP_STRIPE_SECRET_KEY et APP_STRIPE_PUBLISHABLE_KEY
     secret-key: ${APP_STRIPE_SECRET_KEY:sk_test_51234567890abcdefghijk}
     publishable-key: ${APP_STRIPE_PUBLISHABLE_KEY:pk_test_51234567890abcdefghijk}
+    # Secret de signature du webhook Stripe (commence par whsec_...), obtenu dans
+    # le dashboard Stripe > Developers > Webhooks. Permet de vérifier que les
+    # notifications de paiement viennent bien de Stripe. Surcharger via
+    # APP_STRIPE_WEBHOOK_SECRET en production.
+    webhook-secret: ${APP_STRIPE_WEBHOOK_SECRET:whsec_test_placeholder}

@@ -7,6 +7,9 @@ export const portalApi = {
 
   findMesInvoices: () => http.get<Invoice[]>('/api/portal/invoices').then((res) => res.data),
 
+  findMonInvoice: (id: number) =>
+    http.get<Invoice>(`/api/portal/invoices/${id}`).then((res) => res.data),
+
   /** Chemin (relatif à l'API) d'une capture d'écran, côté portail client. */
   screenshotPath: (projectId: number, screenshotId: number) =>
     `/api/portal/projects/${projectId}/screenshots/${screenshotId}`,

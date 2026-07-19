@@ -1,14 +1,14 @@
 package com.weblocal.freelanceos.payment.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
-import java.math.BigDecimal;
-
+/**
+ * Requête de création d'une intention de paiement.
+ * Seul l'identifiant de la facture est nécessaire : le montant est déterminé
+ * côté serveur à partir de la facture (voir StripeService), jamais fourni par
+ * le client. L'email (optionnel) sert à l'envoi du reçu Stripe.
+ */
 public record CreatePaymentIntentDto(
-    @NotNull Long factureId,
-    @NotNull @Positive BigDecimal montant,
-    @NotBlank String email,
-    String description
+    @NotNull Long invoiceId,
+    String email
 ) {}

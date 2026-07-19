@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { portalApi } from '../../api/portal'
 import { messageErreur } from '../../api/http'
@@ -7,6 +8,7 @@ import { COULEUR_STATUT_INVOICE, LABELS_STATUT_INVOICE, LABELS_TYPE_INVOICE } fr
 import { Button } from '../../components/ui/Button'
 
 export default function PortalInvoices() {
+  const navigate = useNavigate()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [chargement, setChargement] = useState(true)
 
@@ -63,9 +65,19 @@ export default function PortalInvoices() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-navy-600 dark:text-navy-300">{new Date(i.dateEmission).toLocaleDateString('fr-FR')}</td>
                     <td className="px-4 py-3">
-                      <Button variant="ghost" size="sm" onClick={() => handleTelecharger(i)}>
-                        Télécharger le PDF
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        {i.type === 'FACTURE' && i.statut !== 'PAYE' && (
+                          <Button
+                            size="sm"
+                            onClick={() => navigate(`/portail/factures/${i.id}/paiement`)}
+                          >
+                            💳 Payer
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => handleTelecharger(i)}>
+                          Télécharger le PDF
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}

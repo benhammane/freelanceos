@@ -45,6 +45,15 @@ public class PortalController {
         return portalService.findMesInvoices(user.clientId());
     }
 
+    /** Détail d'une facture du client authentifié (utilisé par la page de paiement). */
+    @GetMapping("/invoices/{id}")
+    public InvoiceResponseDto monInvoice(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable Long id
+    ) {
+        return portalService.findMonInvoice(user.clientId(), id);
+    }
+
     /** Sert une capture d'écran d'un projet du client authentifié. */
     @GetMapping("/projects/{projectId}/screenshots/{screenshotId}")
     public ResponseEntity<byte[]> voirScreenshot(
