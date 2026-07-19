@@ -1,7 +1,8 @@
 package com.weblocal.freelanceos.payment.service;
 
-import com.weblocal.freelanceos.facture.entity.Facture;
-import com.weblocal.freelanceos.facture.repository.FactureRepository;
+import com.weblocal.freelanceos.invoice.Invoice;
+import com.weblocal.freelanceos.invoice.InvoiceRepository;
+import com.weblocal.freelanceos.invoice.StatutInvoice;
 import com.weblocal.freelanceos.payment.dto.CreatePaymentIntentDto;
 import com.weblocal.freelanceos.payment.dto.PaymentIntentResponseDto;
 import com.weblocal.freelanceos.payment.dto.PaymentStatusDto;
@@ -13,21 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
-/**
- * Service pour gérer les paiements avec Stripe.
- *
- * Note: Pour tester, utilisez les clés de test Stripe:
- * - Clé secrète: sk_test_... (à générer sur https://dashboard.stripe.com)
- * - Clé publique: pk_test_... (à générer sur https://dashboard.stripe.com)
- *
- * Carte de test: 4242 4242 4242 4242 (tout mois/année futur, tout CVC)
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -41,22 +29,16 @@ public class StripeService {
     private String stripePublishableKey;
 
     private final PaymentRepository paymentRepository;
-    private final FactureRepository factureRepository;
+    private final InvoiceRepository invoiceRepository;
 
-    /**
-     * Crée une intention de paiement Stripe pour une facture.
-     * En production, cette méthode utiliserait l'API Stripe réelle.
-     */
     public PaymentIntentResponseDto createPaymentIntent(CreatePaymentIntentDto request) {
         log.info("Création d'une intention de paiement pour la facture: {}", request.factureId());
 
-        // Vérifier que la facture existe
-        Facture facture = factureRepository.findById(request.factureId())
+        Invoice invoice = invoiceRepository.findById(request.factureId())
             .orElseThrow(() -> new RuntimeException("Facture non trouvée: " + request.factureId()));
 
-        // Créer l'enregistrement du paiement
         Payment payment = Payment.builder()
-            .facture(facture)
+            .invoice(invoice)
             .montant(request.montant())
             .email(request.email())
             .devise("EUR")
@@ -66,11 +48,7 @@ public class StripeService {
 
         Payment savedPayment = paymentRepository.save(payment);
 
-        // En production: utiliser l'API Stripe réelle
-        // Ci-dessous: simulation avec un ID factice
         String clientSecret = "pi_" + System.currentTimeMillis() + "_secret_" + savedPayment.getId();
-
-        // Mettre à jour le paiement avec l'ID Stripe
         savedPayment.setStripePaymentIntentId("pi_" + System.currentTimeMillis() + "_" + savedPayment.getId());
         paymentRepository.save(savedPayment);
 
@@ -85,12 +63,7 @@ public class StripeService {
         );
     }
 
-    /**
-     * Récupère le statut d'un paiement via l'ID Stripe.
-     */
     public PaymentStatusDto getPaymentStatus(String stripePaymentIntentId) {
-        log.info("Récupération du statut du paiement: {}", stripePaymentIntentId);
-
         Payment payment = paymentRepository.findByStripePaymentIntentId(stripePaymentIntentId)
             .orElseThrow(() -> new RuntimeException("Paiement non trouvé: " + stripePaymentIntentId));
 
@@ -101,9 +74,6 @@ public class StripeService {
         );
     }
 
-    /**
-     * Confirme un paiement réussi (appelé après confirmation du client).
-     */
     public void confirmPayment(String stripePaymentIntentId) {
         log.info("Confirmation du paiement: {}", stripePaymentIntentId);
 
@@ -114,25 +84,16 @@ public class StripeService {
         payment.setDataPaiement(LocalDateTime.now());
         payment.setStripeReceiptUrl("https://receipts.stripe.test/" + stripePaymentIntentId);
 
-        // Mettre à jour la facture comme payée
-        Facture facture = payment.getFacture();
-        facture.setMontantPaye(facture.getMontantPaye().add(payment.getMontant()));
-        if (facture.getMontantPaye().compareTo(facture.getMontantTotal()) >= 0) {
-            facture.setStatut("PAYED");
-        }
+        Invoice invoice = payment.getInvoice();
+        invoice.setStatut(StatutInvoice.PAYE);
 
         paymentRepository.save(payment);
-        factureRepository.save(facture);
+        invoiceRepository.save(invoice);
 
         log.info("Paiement confirmé: {}", stripePaymentIntentId);
     }
 
-    /**
-     * Annule un paiement.
-     */
     public void cancelPayment(String stripePaymentIntentId) {
-        log.info("Annulation du paiement: {}", stripePaymentIntentId);
-
         Payment payment = paymentRepository.findByStripePaymentIntentId(stripePaymentIntentId)
             .orElseThrow(() -> new RuntimeException("Paiement non trouvé: " + stripePaymentIntentId));
 
@@ -142,17 +103,7 @@ public class StripeService {
         log.info("Paiement annulé: {}", stripePaymentIntentId);
     }
 
-    /**
-     * Récupère la clé publique Stripe pour le formulaire.
-     */
     public String getPublishableKey() {
         return stripePublishableKey;
-    }
-
-    /**
-     * Récupère l'historique des paiements pour une facture.
-     */
-    public java.util.List<Payment> getPaymentsByInvoice(Long factureId) {
-        return paymentRepository.findByFactureId(factureId);
     }
 }

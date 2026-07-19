@@ -1,8 +1,8 @@
 package com.weblocal.freelanceos.payment.entity;
 
-import com.weblocal.freelanceos.common.entity.BaseEntity;
-import com.weblocal.freelanceos.facture.entity.Facture;
-import com.weblocal.freelanceos.user.entity.User;
+import com.weblocal.freelanceos.common.BaseEntity;
+import com.weblocal.freelanceos.invoice.Invoice;
+import com.weblocal.freelanceos.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +25,7 @@ public class Payment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
-    private Facture facture;
+    private Invoice invoice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -54,9 +54,9 @@ public class Payment extends BaseEntity {
     private String metadata;
 
     public enum PaymentStatus {
-        PENDING,      // En attente
-        SUCCEEDED,    // Réussi
-        FAILED,       // Échoué
-        CANCELLED     // Annulé
+        PENDING,
+        SUCCEEDED,
+        FAILED,
+        CANCELLED
     }
 }
