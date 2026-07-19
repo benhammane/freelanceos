@@ -94,7 +94,7 @@ export function VideoRoomPage() {
       // Start screen sharing
       try {
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { cursor: 'always' },
+          video: true,
           audio: false
         });
         screenStreamRef.current = screenStream;
@@ -112,7 +112,7 @@ export function VideoRoomPage() {
           if (screenRef.current) {
             screenRef.current.srcObject = null;
           }
-          toast.info('Partage d\'écran arrêté');
+          toast.success('Partage d\'écran arrêté');
         };
       } catch (err) {
         toast.error('Impossible de partager l\'écran');

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, ChevronDown, LayoutDashboard, LogOut, Menu, NotebookPen, Plus, Receipt, Search, Users, FolderKanban, Activity, Calendar, Video } from 'lucide-react'
+import { ChevronDown, LayoutDashboard, LogOut, Menu, NotebookPen, Plus, Receipt, Search, Users, FolderKanban, Activity, Calendar, Video } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { ThemeToggle } from './ThemeToggle'
