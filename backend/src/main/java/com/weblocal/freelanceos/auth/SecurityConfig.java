@@ -77,6 +77,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Le login doit rester accessible sans être déjà authentifié...
                         .requestMatchers("/api/auth/**").permitAll()
+                        // Le handshake WebSocket de signaling est protégé séparément par
+                        // JwtHandshakeInterceptor (le JWT y est passé en query param, car
+                        // un navigateur ne peut pas poser d'en-tête Authorization sur un WS).
+                        .requestMatchers("/ws/**").permitAll()
                         // ...de même que la documentation Swagger, utile pour explorer l'API.
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Tout le reste de l'API exige d'être authentifié ; le détail fin
