@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FolderKanban, LogOut, Menu, Receipt, Zap } from 'lucide-react'
+import { FolderKanban, LogOut, Menu, MessageSquare, Receipt, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Avatar } from './ui/Avatar'
@@ -11,6 +11,7 @@ import { ThemeToggle } from './ThemeToggle'
 const LIENS: { to: string; label: string; icone: LucideIcon; end?: boolean }[] = [
   { to: '/portail', label: 'Mes projets', icone: FolderKanban, end: true },
   { to: '/portail/factures', label: 'Mes devis & factures', icone: Receipt },
+  { to: '/portail/messages', label: 'Messagerie', icone: MessageSquare },
 ]
 
 function PortalSidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -80,7 +81,11 @@ function PortalSidebar({ onNavigate }: { onNavigate?: () => void }) {
 export function PortalLayout({ children }: { children: ReactNode }) {
   const location = useLocation()
   const [tiroirOuvert, setTiroirOuvert] = useState(false)
-  const titre = location.pathname.startsWith('/portail/factures') ? 'Mes devis & factures' : 'Mes projets'
+  const titre = location.pathname.startsWith('/portail/factures')
+    ? 'Mes devis & factures'
+    : location.pathname.startsWith('/portail/messages')
+      ? 'Messagerie'
+      : 'Mes projets'
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--app-bg)]">

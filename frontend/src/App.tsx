@@ -13,6 +13,8 @@ import ProjectsKanban from './pages/ProjectsKanban'
 import ProjectDetail from './pages/ProjectDetail'
 import Factures from './pages/Factures'
 import Notes from './pages/Notes'
+import Messages from './pages/Messages'
+import PortalMessages from './pages/portal/PortalMessages'
 import { ActivityTimelinePage } from './pages/ActivityTimelinePage'
 import { CalendarPage } from './pages/CalendarPage'
 import { VideoRoomPage } from './pages/VideoRoomPage'
@@ -115,6 +117,16 @@ function App() {
             }
           />
           <Route
+            path="/messages"
+            element={
+              <ProtectedRoute role="ADMIN">
+                <Layout>
+                  <Messages />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/activity-timeline"
             element={
               <ProtectedRoute role="ADMIN">
@@ -170,6 +182,16 @@ function App() {
               <ProtectedRoute role="CLIENT">
                 <PortalLayout>
                   <PortalInvoices />
+                </PortalLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portail/messages"
+            element={
+              <ProtectedRoute role="CLIENT">
+                <PortalLayout>
+                  <PortalMessages />
                 </PortalLayout>
               </ProtectedRoute>
             }

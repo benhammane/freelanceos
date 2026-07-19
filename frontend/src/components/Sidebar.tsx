@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Users, FolderKanban, Receipt, NotebookPen, LogOut, Zap, Activity, Calendar, Video } from 'lucide-react'
+import { LayoutDashboard, Users, FolderKanban, Receipt, NotebookPen, LogOut, Zap, Activity, Calendar, Video, MessageSquare } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Avatar } from './ui/Avatar'
@@ -38,6 +38,7 @@ const SECTIONS: Section[] = [
   {
     titre: 'Collaboration',
     liens: [
+      { to: '/messages', label: 'Messagerie', icone: MessageSquare },
       { to: '/calendar', label: 'Calendar', icone: Calendar },
       { to: '/video-rooms', label: 'Vidéoconférences', icone: Video },
     ],

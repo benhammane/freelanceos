@@ -39,9 +39,9 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     ) {
         var params = UriComponentsBuilder.fromUri(request.getURI()).build().getQueryParams();
         String token = first(params.get("token"));
-        String roomId = first(params.get("roomId"));
+        String roomId = first(params.get("roomId")); // optionnel (utilisé par la visio)
 
-        if (token == null || roomId == null) {
+        if (token == null) {
             return false;
         }
 
@@ -51,9 +51,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         }
 
         Number userId = claims.get("userId", Number.class);
-        attributes.put("roomId", roomId);
+        Number clientId = claims.get("clientId", Number.class);
         attributes.put("userId", userId != null ? userId.longValue() : null);
+        attributes.put("clientId", clientId != null ? clientId.longValue() : null);
+        attributes.put("role", claims.get("role", String.class));
         attributes.put("email", claims.getSubject());
+        if (roomId != null) {
+            attributes.put("roomId", roomId);
+        }
         return true;
     }
 

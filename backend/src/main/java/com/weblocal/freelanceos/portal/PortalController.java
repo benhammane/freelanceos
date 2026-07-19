@@ -2,9 +2,13 @@ package com.weblocal.freelanceos.portal;
 
 import com.weblocal.freelanceos.auth.AuthenticatedUser;
 import com.weblocal.freelanceos.invoice.dto.InvoiceResponseDto;
+import com.weblocal.freelanceos.message.MessageService;
+import com.weblocal.freelanceos.message.dto.MessageDto;
+import com.weblocal.freelanceos.message.dto.SendMessageDto;
 import com.weblocal.freelanceos.project.ProjectScreenshot;
 import com.weblocal.freelanceos.project.dto.ProjectResponseDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +40,28 @@ import java.util.List;
 public class PortalController {
 
     private final PortalService portalService;
+    private final MessageService messageService;
+
+    // --- Messagerie avec le freelance ---
+
+    @GetMapping("/messages")
+    public List<MessageDto> mesMessages(@AuthenticationPrincipal AuthenticatedUser user) {
+        return messageService.getConversation(user.clientId());
+    }
+
+    @PostMapping("/messages")
+    public MessageDto envoyerMessage(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @Valid @RequestBody SendMessageDto dto
+    ) {
+        return messageService.sendAsClient(user.clientId(), dto.contenu(), user.userId());
+    }
+
+    @PostMapping("/messages/read")
+    public ResponseEntity<Void> marquerMessagesLus(@AuthenticationPrincipal AuthenticatedUser user) {
+        messageService.markReadByClient(user.clientId());
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/projects")
     public List<ProjectResponseDto> mesProjects(@AuthenticationPrincipal AuthenticatedUser user) {
