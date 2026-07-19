@@ -4,6 +4,6 @@
     "builder": "DOCKERFILE"
   },
   "deploy": {
-    "startCommand": "java -jar target/freelanceos-*.jar"
+    "startCommand": "java -jar app.jar"
   }
 }
