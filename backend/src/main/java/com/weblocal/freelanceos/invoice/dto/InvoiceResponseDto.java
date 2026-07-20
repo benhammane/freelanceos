@@ -5,6 +5,7 @@ import com.weblocal.freelanceos.invoice.TypeInvoice;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record InvoiceResponseDto(
@@ -21,6 +22,9 @@ public record InvoiceResponseDto(
         BigDecimal montantTTC,
         StatutInvoice statut,
         LocalDate dateEmission,
-        LocalDate dateEcheance
+        LocalDate dateEcheance,
+        String signataireNom,
+        LocalDateTime dateAcceptation,
+        String ipAcceptation
 ) {
 }

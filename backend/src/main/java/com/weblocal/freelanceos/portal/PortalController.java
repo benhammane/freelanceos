@@ -1,6 +1,7 @@
 package com.weblocal.freelanceos.portal;
 
 import com.weblocal.freelanceos.auth.AuthenticatedUser;
+import com.weblocal.freelanceos.invoice.dto.AccepterDevisDto;
 import com.weblocal.freelanceos.invoice.dto.InvoiceResponseDto;
 import com.weblocal.freelanceos.message.MessageService;
 import com.weblocal.freelanceos.message.dto.MessageDto;
@@ -8,6 +9,7 @@ import com.weblocal.freelanceos.message.dto.SendMessageDto;
 import com.weblocal.freelanceos.project.ProjectScreenshot;
 import com.weblocal.freelanceos.project.dto.ProjectResponseDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -80,6 +82,26 @@ public class PortalController {
             @PathVariable Long id
     ) {
         return portalService.findMonInvoice(user.clientId(), id);
+    }
+
+    /** Acceptation en ligne d'un devis par le client (signature électronique simple). */
+    @PostMapping("/invoices/{id}/accepter")
+    public InvoiceResponseDto accepterDevis(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable Long id,
+            @Valid @RequestBody AccepterDevisDto dto,
+            HttpServletRequest request
+    ) {
+        return portalService.accepterDevis(user.clientId(), id, dto.signataireNom(), extraireIp(request));
+    }
+
+    /** Extrait l'IP réelle du client, en tenant compte du proxy (Railway) via X-Forwarded-For. */
+    private static String extraireIp(HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            return xff.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     /** Sert une capture d'écran d'un projet du client authentifié. */

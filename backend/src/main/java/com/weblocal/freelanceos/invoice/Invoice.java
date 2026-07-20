@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,4 +70,16 @@ public class Invoice extends BaseEntity {
     private LocalDate dateEmission;
 
     private LocalDate dateEcheance;
+
+    // --- Preuve d'acceptation en ligne d'un devis (signature électronique simple) ---
+    // Renseignés uniquement quand un client accepte un devis via son portail.
+
+    /** Nom saisi par le client au moment de l'acceptation (le signataire). */
+    private String signataireNom;
+
+    /** Horodatage de l'acceptation. */
+    private LocalDateTime dateAcceptation;
+
+    /** Adresse IP depuis laquelle le devis a été accepté (élément de preuve). */
+    private String ipAcceptation;
 }

@@ -10,6 +10,12 @@ export const portalApi = {
   findMonInvoice: (id: number) =>
     http.get<Invoice>(`/api/portal/invoices/${id}`).then((res) => res.data),
 
+  /** Accepte (signe) un devis en ligne. */
+  accepterDevis: (id: number, signataireNom: string) =>
+    http
+      .post<Invoice>(`/api/portal/invoices/${id}/accepter`, { signataireNom, consentement: true })
+      .then((res) => res.data),
+
   /** Chemin (relatif à l'API) d'une capture d'écran, côté portail client. */
   screenshotPath: (projectId: number, screenshotId: number) =>
     `/api/portal/projects/${projectId}/screenshots/${screenshotId}`,

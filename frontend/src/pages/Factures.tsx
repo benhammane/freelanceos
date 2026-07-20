@@ -115,7 +115,24 @@ export default function Factures() {
           getSearchText={(i) => `${i.numero} ${i.clientNom}`}
           emptyMessage="Aucun devis ou facture pour le moment"
           columns={[
-            { key: 'numero', header: 'Numéro', render: (i) => <span className="font-medium">{i.numero}</span>, sortValue: (i) => i.numero },
+            {
+              key: 'numero',
+              header: 'Numéro',
+              render: (i) => (
+                <div>
+                  <span className="font-medium">{i.numero}</span>
+                  {i.statut === 'ACCEPTE' && i.signataireNom && i.dateAcceptation && (
+                    <span
+                      className="mt-0.5 block text-xs font-normal text-violet-600 dark:text-violet-400"
+                      title={`Signé par ${i.signataireNom} le ${new Date(i.dateAcceptation).toLocaleString('fr-FR')}${i.ipAcceptation ? ` — IP ${i.ipAcceptation}` : ''}`}
+                    >
+                      ✓ Signé par {i.signataireNom} le {new Date(i.dateAcceptation).toLocaleDateString('fr-FR')}
+                    </span>
+                  )}
+                </div>
+              ),
+              sortValue: (i) => i.numero,
+            },
             { key: 'type', header: 'Type', render: (i) => LABELS_TYPE_INVOICE[i.type], sortValue: (i) => i.type },
             { key: 'client', header: 'Client', render: (i) => i.clientNom, sortValue: (i) => i.clientNom },
             {

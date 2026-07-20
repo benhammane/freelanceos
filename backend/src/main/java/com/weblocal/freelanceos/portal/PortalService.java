@@ -1,10 +1,13 @@
 package com.weblocal.freelanceos.portal;
 
+import com.weblocal.freelanceos.common.ConflictException;
 import com.weblocal.freelanceos.common.ResourceNotFoundException;
 import com.weblocal.freelanceos.invoice.Invoice;
 import com.weblocal.freelanceos.invoice.InvoiceMapper;
 import com.weblocal.freelanceos.invoice.InvoicePdfService;
 import com.weblocal.freelanceos.invoice.InvoiceRepository;
+import com.weblocal.freelanceos.invoice.StatutInvoice;
+import com.weblocal.freelanceos.invoice.TypeInvoice;
 import com.weblocal.freelanceos.invoice.dto.InvoiceResponseDto;
 import com.weblocal.freelanceos.project.Project;
 import com.weblocal.freelanceos.project.ProjectMapper;
@@ -78,6 +81,33 @@ public class PortalService {
 
     public InvoiceResponseDto findMonInvoice(Long clientId, Long invoiceId) {
         return invoiceMapper.toResponseDto(getInvoiceDuClientOuThrow(clientId, invoiceId));
+    }
+
+    /**
+     * Acceptation en ligne d'un devis par le client (signature électronique
+     * simple). Enregistre le nom du signataire, l'horodatage et l'IP comme
+     * preuve, et fait passer le document au statut ACCEPTE.
+     *
+     * Contrôles : le document doit appartenir au client, être de type DEVIS et
+     * ne pas être déjà accepté.
+     */
+    public InvoiceResponseDto accepterDevis(Long clientId, Long invoiceId, String signataireNom, String ip) {
+        Invoice invoice = getInvoiceDuClientOuThrow(clientId, invoiceId);
+
+        if (invoice.getType() != TypeInvoice.DEVIS) {
+            throw new ConflictException("Seuls les devis peuvent être acceptés en ligne.");
+        }
+        if (invoice.getStatut() == StatutInvoice.ACCEPTE) {
+            throw new ConflictException("Ce devis a déjà été accepté.");
+        }
+
+        invoice.setStatut(StatutInvoice.ACCEPTE);
+        invoice.setSignataireNom(signataireNom);
+        invoice.setDateAcceptation(java.time.LocalDateTime.now());
+        invoice.setIpAcceptation(ip);
+        invoiceRepository.save(invoice);
+
+        return invoiceMapper.toResponseDto(invoice);
     }
 
     public byte[] genererPdf(Long clientId, Long invoiceId) {

@@ -53,7 +53,10 @@ public class InvoiceMapper {
                 invoice.getMontantTTC(),
                 invoice.getStatut(),
                 invoice.getDateEmission(),
-                invoice.getDateEcheance()
+                invoice.getDateEcheance(),
+                invoice.getSignataireNom(),
+                invoice.getDateAcceptation(),
+                invoice.getIpAcceptation()
         );
     }
 }
